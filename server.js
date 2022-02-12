@@ -28,5 +28,5 @@ app.use("/tutorials", tutorialsRouter);
 app.use("/users", usersRouter);
 
 app.get("/", (req, res) => {
-  res.send("cors should be fixed,relaunch plz");
+  res.send("cors should be fixed,relaunch plz...check gmail error");
 });

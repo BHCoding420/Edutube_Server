@@ -99,6 +99,7 @@ userSchema.post("save", async function (next) {
 
   let result_mail = transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
+      console.log("sending fail");
       console.log(error);
     } else {
       console.log("Email sent: " + info);
