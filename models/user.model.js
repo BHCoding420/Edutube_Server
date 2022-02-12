@@ -94,7 +94,7 @@ userSchema.post("save", async function (next) {
     from: "bhcoding69@gmail.com",
     to: this.email,
     subject: "Sending Email using Node.js",
-    text: `http://localhost:5000/users/activate/${this._id}`,
+    text: `https://edutube-server.herokuapp.com/users/activate/${this._id}`,
   };
 
   let result_mail = transporter.sendMail(mailOptions, function (error, info) {
