@@ -84,14 +84,14 @@ userSchema.post("save", async function (next) {
   var transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "bhcoding69@gmail.com",
+      user: "hello.test.980@gmail.com",
       pass: "Bashar2002",
     },
     tls: { rejectUnauthorized: false },
   });
 
   var mailOptions = {
-    from: "bhcoding69@gmail.com",
+    from: "hello.test.980@gmail.com",
     to: this.email,
     subject: "Sending Email using Node.js",
     text: `https://edutube-server.herokuapp.com/users/activate/${this._id}`,

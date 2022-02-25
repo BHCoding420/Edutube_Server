@@ -1,5 +1,6 @@
 const UserModel = require("../models/user.model");
 const generateToken = require("../config/generateToken");
+const nodemailer = require("nodemailer");
 
 let User = UserModel.User;
 
@@ -106,4 +107,45 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, getUsers, authUser, activateUser, deleteUser };
+const sendmail = async (req, res) => {
+  let id = req.params.id;
+  let address = req.params.address;
+  console.log(id);
+  console.log(address);
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "hello.test.980@gmail.com",
+      pass: "Bashar2002",
+    },
+    tls: { rejectUnauthorized: false },
+  });
+
+  var mailOptions = {
+    from: "hello.test.980@gmail.com",
+    to: address,
+    subject: "Sending Email using Node.js",
+    text: `https://edutube-server.herokuapp.com/users/activate/${id}`,
+  };
+
+  let result_mail = transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log("sending fail");
+      console.log(error);
+      res.json({ success: false });
+    } else {
+      console.log("Email sent: " + info);
+      res.json({ success: true });
+    }
+  });
+  return;
+};
+
+module.exports = {
+  registerUser,
+  getUsers,
+  authUser,
+  activateUser,
+  deleteUser,
+  sendmail,
+};
