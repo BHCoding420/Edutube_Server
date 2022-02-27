@@ -89,7 +89,9 @@ const authUser = async (req, res) => {
         token: generateToken(user._id, user.userName, user.pic),
       });
     } else {
-      return res.status(400).send({ error: "User not activated" });
+      return res
+        .status(400)
+        .send({ error: "User not activated", email: user.email });
     }
   } else {
     res.status(401);

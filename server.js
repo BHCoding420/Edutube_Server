@@ -28,5 +28,5 @@ app.use("/tutorials", tutorialsRouter);
 app.use("/users", usersRouter);
 
 app.get("/", (req, res) => {
-  res.send("Hello again");
+  res.send("Server running");
 });
