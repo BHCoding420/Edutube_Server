@@ -6,6 +6,7 @@ require("dotenv").config();
 
 const tutorialsRouter = require("./routes/tutorials");
 const usersRouter = require("./routes/users");
+const commentsRouter = require("./routes/comments");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -26,7 +27,8 @@ mongoose
 
 app.use("/tutorials", tutorialsRouter);
 app.use("/users", usersRouter);
+app.use("/comments", commentsRouter);
 
 app.get("/", (req, res) => {
-  res.send("Server running :)");
+  res.send("Server running on the web :)");
 });

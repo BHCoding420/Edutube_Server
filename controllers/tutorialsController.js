@@ -1,13 +1,11 @@
 const TutorialModel = require("../models/tutorial.model");
 let Tutorial = TutorialModel.Tutorial;
+const mongoose = require("mongoose");
 
 const getTutorials = async (req, res) => {
   try {
     const tutorials = await Tutorial.find()
-
-      .populate("creator", "_id userName pic")
-      .populate("LikedBy")
-      .populate("DislikedBy");
+    .populate("creator", "_id userName pic");
 
     res.json({ tutorials });
   } catch (error) {
@@ -19,9 +17,8 @@ const getTutorial = async (req, res) => {
   try {
     const tutorials = await Tutorial.find({ _id: req.params.id })
 
-      .populate("creator", "_id userName")
-      .populate("LikedBy")
-      .populate("DislikedBy");
+      .populate("creator", "_id userName pic")
+      .populate("comments");
 
     res.json({ tutorials });
   } catch (error) {
@@ -34,7 +31,7 @@ const getTutorialsbyUser = async (req, res) => {
   try {
     const tutorials = await Tutorial.find({ creator: req.params.UserId })
 
-      .populate("creator", "_id userName")
+      .populate("creator", "_id userName pic")
       .populate("LikedBy")
       .populate("DislikedBy");
 
@@ -93,6 +90,97 @@ const updateTutorial = async (req, res) => {
   }
 };
 
+const addLiketoTut = async (req, res) => {
+  const { TutId, UserId } = req.params;
+
+  const isDisliked = await Tutorial.find({
+    _id: TutId,
+    DislikedBy: { $in: [mongoose.Types.ObjectId(UserId)] },
+  });
+  console.log(isDisliked);
+  console.log("alles gut");
+  if (isDisliked) {
+    const added = await Tutorial.findByIdAndUpdate(
+      TutId,
+      {
+        $pull: { DislikedBy: UserId },
+      },
+      {
+        new: true,
+      }
+    );
+  }
+
+  const added = await Tutorial.findByIdAndUpdate(
+    TutId,
+    {
+      $push: { LikedBy: UserId },
+    },
+    {
+      new: true,
+    }
+  );
+  added ? res.send("added") : res.send(error);
+};
+
+const addDisliketoTut = async (req, res) => {
+  const { TutId, UserId } = req.params;
+  const isLiked = await Tutorial.find({
+    _id: TutId,
+    LikedBy: { $in: [mongoose.Types.ObjectId(UserId)] },
+  });
+  console.log(isLiked);
+  console.log("alles gut");
+  if (isLiked) {
+    const added = await Tutorial.findByIdAndUpdate(
+      TutId,
+      {
+        $pull: { LikedBy: UserId },
+      },
+      {
+        new: true,
+      }
+    );
+  }
+
+  const added = await Tutorial.findByIdAndUpdate(
+    TutId,
+    {
+      $push: { DislikedBy: UserId },
+    },
+    {
+      new: true,
+    }
+  );
+  added ? res.send("added") : res.send(error);
+};
+const removeLiketoTutorial = async (req, res) => {
+  const { TutId, UserId } = req.params;
+  const removed = await Tutorial.findByIdAndUpdate(
+    TutId,
+    {
+      $pull: { LikedBy: UserId },
+    },
+    {
+      new: true,
+    }
+  );
+  removed ? res.send("removed") : res.send(error);
+};
+const removeDisliketoTutorial = async (req, res) => {
+  const { TutId, UserId } = req.params;
+  const removed = await Tutorial.findByIdAndUpdate(
+    TutId,
+    {
+      $pull: { DislikedBy: UserId },
+    },
+    {
+      new: true,
+    }
+  );
+  removed ? res.send("removed") : res.send(error);
+};
+
 module.exports = {
   addTutorial,
   getTutorial,
@@ -100,4 +188,8 @@ module.exports = {
   deleteTutorial,
   updateTutorial,
   getTutorialsbyUser,
+  addLiketoTut,
+  addDisliketoTut,
+  removeLiketoTutorial,
+  removeDisliketoTutorial,
 };

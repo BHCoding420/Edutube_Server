@@ -12,6 +12,7 @@ const tutorialSchema = new Schema(
       trim: true,
     },
     creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
 
     description: { type: String, required: true },
 

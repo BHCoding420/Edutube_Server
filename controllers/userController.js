@@ -4,11 +4,41 @@ const nodemailer = require("nodemailer");
 
 let User = UserModel.User;
 
-const registeration_errors = () => {};
+const registeration_errors = (userName, email, password) => {
+  let errors = { nameError: "", emailError: "", passwordError: "" };
+  const regEmail =
+    /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  const regPassword = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
+
+  if (userName.length < 6) {
+    errors.nameError = " name should be more than 6 characters";
+  }
+
+  if (!regEmail.test(email)) {
+    errors.emailError = "please enter a valid email";
+  }
+  if (!regPassword.test(password)) {
+    errors.passwordError =
+      "password should be between 6 to 20 characters and should contain at least one numeric digit, one uppercase and one lowercase letter";
+  }
+
+  return errors;
+};
 
 const getUsers = async (req, res) => {
   try {
-    const users = await User.find();
+    const users = await User.find().populate("followers").populate("following");
+
+    res.json({ users });
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message);
+  }
+};
+
+const getUser = async (req, res) => {
+  try {
+    const users = await User.find({ _id: req.params.UserId });
 
     res.json({ users });
   } catch (error) {
@@ -18,47 +48,72 @@ const getUsers = async (req, res) => {
 };
 
 const registerUser = async (req, res) => {
-  const { userName, email, password, pic } = req.body;
+  let errors = { nameError: "", emailError: "", passwordError: "" };
+  try {
+    const { userName, email, password, pic } = req.body;
 
-  if (!userName || !email || !password) {
-    return res.status(400).json({ error: "Please Enter all the Feilds" });
-    //throw new Error("Please Enter all the Feilds");
-  }
-  console.log("check 1");
-  const userExists = await User.findOne({ email }).catch((err) => {
-    console.log("error" + err);
-  });
+    if (!userName || !email || !password) {
+      //return res.status(400).json({ error: "Please Enter all the Feilds" });
+      throw new Error({ error: "Please Enter all the Feilds" });
+    }
 
-  if (userExists) {
-    console.log("check 2");
-    return res.status(400).send({ error: "e-mail already used" });
-
-    //throw new Error("User already exists");
-  }
-
-  const user = await User.create({
-    userName,
-    email,
-    password,
-    pic,
-    followers: [],
-    following: [],
-  });
-  console.log("check 3");
-
-  if (user) {
-    res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      pic: user.pic,
-      isAdmin: user.isAdmin,
-      pic: user.pic,
-      token: generateToken(user.userName),
+    const emailExists = await User.findOne({ email }).catch((err) => {
+      console.log("error" + err);
     });
-  } else {
-    res.status(400).send({ error: "User not found" });
-    throw new Error("User not found");
+
+    if (emailExists) {
+      console.log("check 2");
+      //res.status(400).send({ error: "e-mail already used" });
+
+      throw { emailError: "e-mail already used" };
+    }
+    const usernameExists = await User.findOne({ userName }).catch((err) => {
+      console.log("error" + err);
+    });
+
+    if (usernameExists) {
+      console.log("check 2");
+      //res.status(400).send({ error: "e-mail already used" });
+
+      throw { nameError: "username already used" };
+    }
+
+    errors = registeration_errors(userName, email, password);
+
+    if (
+      errors.nameError != "" ||
+      errors.emailError != "" ||
+      errors.passwordError != ""
+    ) {
+      console.log("validation errrrror");
+      throw errors;
+    }
+
+    const user = await User.create({
+      userName,
+      email,
+      password,
+      pic,
+      followers: [],
+      following: [],
+    });
+
+    if (user) {
+      res.status(201).json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        pic: user.pic,
+        isAdmin: user.isAdmin,
+        pic: user.pic,
+        token: generateToken(user.userName),
+      });
+    } else {
+      //res.status(400).send({ error: "User not found" });
+      throw { error: "User not found" };
+    }
+  } catch (err) {
+    res.status(400).send(err);
   }
 };
 
@@ -143,11 +198,62 @@ const sendmail = async (req, res) => {
   return;
 };
 
+const addFollower = async (req, res) => {
+  const { followerId, UserId } = req.params;
+  const addfollower = await User.findByIdAndUpdate(
+    UserId,
+    {
+      $push: { followers: followerId },
+    },
+    {
+      new: true,
+    }
+  );
+  const addFollowing = await User.findByIdAndUpdate(
+    followerId,
+    {
+      $push: { following: UserId },
+    },
+    {
+      new: true,
+    }
+  );
+  addFollower && addFollowing ? res.send("follow added") : res.send(error);
+};
+
+const removeFollower = async (req, res) => {
+  const { followerId, UserId } = req.params;
+  const removefollower = await User.findByIdAndUpdate(
+    UserId,
+    {
+      $pull: { followers: followerId },
+    },
+    {
+      new: true,
+    }
+  );
+  const removeFollowing = await User.findByIdAndUpdate(
+    followerId,
+    {
+      $pull: { following: UserId },
+    },
+    {
+      new: true,
+    }
+  );
+  removeFollower && removeFollowing
+    ? res.send("follow added")
+    : res.send(error);
+};
+
 module.exports = {
   registerUser,
   getUsers,
+  getUser,
   authUser,
   activateUser,
   deleteUser,
   sendmail,
+  addFollower,
+  removeFollower,
 };
