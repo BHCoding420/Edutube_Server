@@ -4,10 +4,7 @@ let Comment = CommentModel.Comment;
 const getComments = async (req, res) => {
   try {
     const comments = await Comment.find()
-
-      .populate("creator", "_id userName pic")
-      .populate("LikedBy")
-      .populate("DislikedBy");
+    .populate("creator", "_id userName pic");
 
     res.json({ comments });
   } catch (error) {
@@ -19,8 +16,7 @@ const getCommentsforTutorial = async (req, res) => {
   try {
     const comments = await Comment.find({
       referenceTutorial: req.params.TutId,
-    })
-    .populate("creator", "_id userName pic");
+    }).populate("creator", "_id userName pic");
 
     res.json({ comments });
   } catch (error) {
