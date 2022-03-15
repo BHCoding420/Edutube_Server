@@ -4,8 +4,10 @@ const mongoose = require("mongoose");
 
 const getTutorials = async (req, res) => {
   try {
-    const tutorials = await Tutorial.find()
-    .populate("creator", "_id userName pic");
+    const tutorials = await Tutorial.find().populate(
+      "creator",
+      "_id userName pic"
+    );
 
     res.json({ tutorials });
   } catch (error) {
@@ -40,6 +42,15 @@ const getTutorialsbyUser = async (req, res) => {
     res.status(400);
     throw new Error(error.message);
   }
+};
+const searchTutorials = async (req, res) => {
+  const search_query = req.params.search_query;
+
+  const result = await Tutorial.find({
+    title: { $regex: `${search_query}`, $options: "si" },
+  }).populate("creator");
+
+  res.json({ result });
 };
 
 const addTutorial = async (req, res) => {
@@ -192,4 +203,5 @@ module.exports = {
   addDisliketoTut,
   removeLiketoTutorial,
   removeDisliketoTutorial,
+  searchTutorials,
 };

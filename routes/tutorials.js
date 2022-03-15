@@ -10,6 +10,7 @@ const {
   addDisliketoTut,
   removeLiketoTutorial,
   removeDisliketoTutorial,
+  searchTutorials,
 } = require("../controllers/tutorialsController");
 
 const router = express.Router();
@@ -24,6 +25,7 @@ router.route("/like/:TutId/:UserId").put(addLiketoTut);
 router.route("/dislike/:TutId/:UserId").put(addDisliketoTut);
 router.route("/rem_like/:TutId/:UserId").put(removeLiketoTutorial);
 router.route("/rem_dislike/:TutId/:UserId").put(removeDisliketoTutorial);
+router.route("/search/:search_query").get(searchTutorials);
 /*router.route("/:lol/:hello").put(async (req, res) => {
   const { lol, hello } = req.params;
   res.status(200).send(lol + " " + hello);
