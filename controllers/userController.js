@@ -172,7 +172,7 @@ const sendmail = async (req, res) => {
     service: "gmail",
     auth: {
       user: "hello.test.980@gmail.com",
-      pass: "Bashar2002",
+      pass: "rwdidgsmnkdbpztc",
     },
     tls: { rejectUnauthorized: false },
   });
@@ -181,7 +181,7 @@ const sendmail = async (req, res) => {
     from: "hello.test.980@gmail.com",
     to: address,
     subject: "Sending Email using Node.js",
-    text: `https://edutube-server.herokuapp.com/users/activate/${id}`,
+    text: `click this link to verify :https://edutube-server.herokuapp.com/users/activate/${id}`,
   };
 
   let result_mail = transporter.sendMail(mailOptions, function (error, info) {
@@ -245,6 +245,40 @@ const removeFollower = async (req, res) => {
     : res.send(error);
 };
 
+const editUser = async (req, res) => {
+  try {
+    const { userName, pic } = req.body;
+    const UserId = req.params.UserId;
+    const OriginalUsername = req.params.OriginalUsername;
+
+    console.log(OriginalUsername);
+    console.log(UserId);
+    if (userName !== OriginalUsername) {
+      const usernameExists = await User.findOne({ userName }).catch((err) => {
+        console.log("error" + err);
+      });
+
+      if (usernameExists) {
+        throw { nameError: "username already used" };
+      }
+    }
+
+    const options = { new: true };
+
+    const result = await User.findByIdAndUpdate(
+      UserId,
+      { userName, pic },
+      options
+    );
+    res.send(result);
+  } catch (err) {
+    console.log(err.code);
+    if (err.code === 11000) {
+      res.json({ error: "Username already used" });
+    }
+  }
+};
+
 module.exports = {
   registerUser,
   getUsers,
@@ -255,4 +289,5 @@ module.exports = {
   sendmail,
   addFollower,
   removeFollower,
+  editUser,
 };

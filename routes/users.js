@@ -9,6 +9,7 @@ const {
   getUser,
   addFollower,
   removeFollower,
+  editUser,
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -22,5 +23,6 @@ router.get("/activate/:userId", activateUser);
 router.get("/:id/:address", sendmail);
 router.route("/follow/:followerId/:UserId").put(addFollower);
 router.put("/unfollow/:followerId/:UserId", removeFollower);
+router.route("/edit/:OriginalUsername/:UserId").patch(editUser);
 
 module.exports = router;
