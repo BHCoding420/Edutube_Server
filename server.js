@@ -2,15 +2,15 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-require("dotenv").config(); 
+require("dotenv").config();
 
-const app = express(); 
-app.use(cors());
+const app = express();
+//app.use(cors());
+app.use(cors({ origin: "https://edutube2.netlify.app" }));
 
 const tutorialsRouter = require("./routes/tutorials");
 const usersRouter = require("./routes/users");
 const commentsRouter = require("./routes/comments");
-
 
 const port = process.env.PORT || 5000;
 
