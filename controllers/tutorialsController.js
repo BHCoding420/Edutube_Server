@@ -9,6 +9,7 @@ const getTutorials = async (req, res) => {
       "_id userName pic"
     );
 
+     res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
     res.json({ tutorials });
   } catch (error) {
     res.status(400);

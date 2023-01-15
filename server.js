@@ -2,18 +2,21 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-require("dotenv").config();
+require("dotenv").config(); 
+
+const app = express(); 
+app.use(cors());
 
 const tutorialsRouter = require("./routes/tutorials");
 const usersRouter = require("./routes/users");
 const commentsRouter = require("./routes/comments");
 
-const app = express();
+
 const port = process.env.PORT || 5000;
 
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
-app.use(cors());
+
 app.use(express.json());
 
 const uri = process.env.URI;
