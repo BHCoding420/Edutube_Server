@@ -2,11 +2,12 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-require("dotenv").config();
 
 const app = express();
 //app.use(cors());
 app.use(cors({ origin: "https://edutube2.netlify.app" }));
+
+require("dotenv").config();
 
 const tutorialsRouter = require("./routes/tutorials");
 const usersRouter = require("./routes/users");
@@ -33,5 +34,5 @@ app.use("/users", usersRouter);
 app.use("/comments", commentsRouter);
 
 app.get("/", (req, res) => {
-  res.send("Server running on the web :)");
+  res.send("Server update :)");
 });
