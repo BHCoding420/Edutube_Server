@@ -9,7 +9,7 @@ const getTutorials = async (req, res) => {
       "_id userName pic"
     );
 
-    res.header("Access-Control-Allow-Origin", "'https://edutube2.netlify.app");
+    res.header("Access-Control-Allow-Origin", "https://edutube2.netlify.app");
     res.json({ tutorials });
   } catch (error) {
     res.status(400);
