@@ -34,5 +34,5 @@ app.use("/users", usersRouter);
 app.use("/comments", commentsRouter);
 
 app.get("/", (req, res) => {
-  res.send("Server update :)");
+  res.send("Server update again :)");
 });
